@@ -64,15 +64,36 @@
     <script>
         function cleanText() {
             const inputText = document.getElementById('inputText').value;
-            // 1. Replace line breaks that are not preceded by a period or followed by a new line.
-            // This joins sentences that were split across lines.
-            let cleanedText = inputText.replace(/([^.。])\n(?!\n)/g, '$1 ');
 
-            // 2. Replace multiple spaces with a single space.
-            cleanedText = cleanedText.replace(/ +/g, ' ');
+            // 1. 全角スペースを半角に統一
+            let text = inputText.replace(/　/g, ' ');
 
-            // 3. Trim leading/trailing whitespace from the entire text.
-            cleanedText = cleanedText.trim();
+            // 2. テキストを段落に分割 (2つ以上の改行を区切りとする)
+            // 空の入力によって['']が生成されるのを防ぐ
+            if (text.trim() === '') {
+                document.getElementById('outputText').value = '';
+                return;
+            }
+            const paragraphs = text.split(/\n{2,}/);
+
+            // 3. 各段落を処理
+            const cleanedParagraphs = paragraphs.map(p => {
+                return p
+                    // 段落内の改行と、その前後にある半角スペースを削除
+                    .replace(/ *\n */g, '')
+                    // 複数のスペースを1つにまとめる
+                    .replace(/ +/g, ' ')
+                    // 句読点(、。)の前のスペースを削除
+                    .replace(/\s+([、。])/g, '$1')
+                    // 括弧の前後のスペースを調整
+                    .replace(/\s+([」】)])/g, '$1') // closing brackets
+                    .replace(/([(「【])\s+/g, '$1') // opening brackets
+                    // 段落の最初と最後の空白を削除
+                    .trim();
+            });
+
+            // 4. 段落を再結合
+            const cleanedText = cleanedParagraphs.filter(p => p.length > 0).join('\n\n');
 
             document.getElementById('outputText').value = cleanedText;
         }

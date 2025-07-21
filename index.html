@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFテキストクリーナー</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 2em;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        #container {
+            display: flex;
+            justify-content: center;
+            gap: 2em;
+        }
+        textarea {
+            width: 40vw;
+            height: 60vh;
+            padding: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        #controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1em;
+        }
+        button {
+            padding: 0.8em 1.5em;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>PDFテキストクリーナー</h1>
+    <div id="container">
+        <textarea id="inputText" placeholder="ここにPDFからコピーしたテキストを貼り付け..."></textarea>
+        <div id="controls">
+            <button onclick="cleanText()">整形する</button>
+            <button onclick="copyToClipboard()">コピー</button>
+        </div>
+        <textarea id="outputText" placeholder="整形後のテキスト..."></textarea>
+    </div>
+
+    <script>
+        function cleanText() {
+            const inputText = document.getElementById('inputText').value;
+            // 1. Replace line breaks that are not preceded by a period or followed by a new line.
+            // This joins sentences that were split across lines.
+            let cleanedText = inputText.replace(/([^.。])\n(?!\n)/g, '$1 ');
+
+            // 2. Replace multiple spaces with a single space.
+            cleanedText = cleanedText.replace(/ +/g, ' ');
+
+            // 3. Trim leading/trailing whitespace from the entire text.
+            cleanedText = cleanedText.trim();
+
+            document.getElementById('outputText').value = cleanedText;
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('outputText');
+            outputText.select();
+            document.execCommand('copy');
+        }
+    </script>
+
+</body>
+</html>
